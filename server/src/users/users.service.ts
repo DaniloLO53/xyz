@@ -35,6 +35,16 @@ export class UsersService {
     return await this.db.update(users).set({ email, password: hash });
   }
 
+  async deleteUser(id: string) {
+    const [existentUser] = await this.findUserById(Number(id));
+
+    if (!existentUser) {
+      throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+    }
+
+    return await this.db.delete(users).where(eq(users.id, Number(id)));
+  }
+
   hashPassword(password: string) {
     const salt = crypto.randomBytes(32).toString('hex');
     const hash = crypto
