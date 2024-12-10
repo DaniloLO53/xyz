@@ -15,6 +15,13 @@
       "when": 1733838240514,
       "tag": "0001_curved_ares",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1733839252184,
+      "tag": "0002_skinny_betty_ross",
+      "breakpoints": true
     }
   ]
 }
