@@ -5,6 +5,7 @@ import { DrizzleDB } from 'src/drizzle/types/drizzle';
 import { CreateUserDto } from './dto/createUser.dto';
 import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
+import { UpdateUserDto } from './dto/updateUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,12 +14,25 @@ export class UsersService {
   async createUser({ email, password }: CreateUserDto) {
     const [existentUser] = await this.findUserByEmail(email);
 
+    console.log(existentUser);
+
     if (existentUser) {
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
     }
 
     const { hash } = this.hashPassword(password);
     return await this.db.insert(users).values({ email, password: hash });
+  }
+
+  async updateUser({ email, password, id }: UpdateUserDto) {
+    const [existentUser] = await this.findUserById(Number(id));
+
+    if (!existentUser) {
+      throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
+    }
+
+    const { hash } = this.hashPassword(password);
+    return await this.db.update(users).set({ email, password: hash });
   }
 
   hashPassword(password: string) {
@@ -31,5 +45,9 @@ export class UsersService {
 
   async findUserByEmail(email: string) {
     return await this.db.select().from(users).where(eq(users.email, email));
+  }
+
+  async findUserById(id: number) {
+    return await this.db.select().from(users).where(eq(users.id, id));
   }
 }
