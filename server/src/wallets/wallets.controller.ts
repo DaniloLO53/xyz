@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { WalletService } from './wallets.service';
 
-@Controller('fun')
+@Controller('wallets')
 export class WalletController {
   constructor(private walletService: WalletService) {}
 
