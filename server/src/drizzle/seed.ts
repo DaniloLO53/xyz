@@ -19,8 +19,9 @@ async function main() {
           .insert(schema.users)
           .values({
             email: faker.internet.email(),
-            password: '',
-          })
+            password: faker.internet.password(),
+            salt: faker.internet.password(),
+          } as typeof schema.users.$inferInsert) //work around to fix inference error due to default value for "salt" at user's table
           .returning();
 
         return user[0].id;

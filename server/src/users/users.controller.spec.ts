@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/createUser.dto';
 import { faker } from '@faker-js/faker';
 
 describe('UsersController', () => {
-  const createUserDto: CreateUserDto = {
+  const createUserDto = {
     email: faker.internet.email(),
     password: faker.internet.password(),
   };
@@ -20,9 +19,6 @@ describe('UsersController', () => {
     createUser: jest.fn(),
     updateUser: jest.fn(),
     deleteUser: jest.fn(),
-    hashPassword: jest.fn(),
-    findUserByEmail: jest.fn(),
-    findUserById: jest.fn(),
   };
 
   beforeAll(async () => {
