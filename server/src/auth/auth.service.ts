@@ -4,6 +4,7 @@ import { CreateUserDto } from 'src/users/dto/createUser.dto';
 import { UsersService } from 'src/users/users.service';
 import crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +26,15 @@ export class AuthService {
 
     if (passwordIsValid) {
       const { password, salt, id, ...user } = existingUser;
-      return { accessToken: this.jwtService.sign(user) };
+      const refreshToken = uuidv4();
+      const accessToken = this.jwtService.sign({ sub: id, ...user });
+
+      await this.userService.storeRefreshToken({
+        token: refreshToken,
+        sub: id.toString(),
+      });
+
+      return { accessToken, refreshToken };
     }
     throw new HttpException("Incorrect user's data", HttpStatus.UNAUTHORIZED);
   }

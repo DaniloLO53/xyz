@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { DRIZZLE } from '../drizzle/drizzle.module';
-import { users } from '../drizzle/schema/users.schema';
 import { DrizzleDB } from '../drizzle/types/drizzle';
 import { CreateUserDto } from './dto/createUser.dto';
 import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import * as schema from '../drizzle/schema/schema';
+import { RefreshTokenDto } from './dto/refreshToken.dto';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +20,7 @@ export class UsersService {
     }
 
     const { salt, hash } = this.hashPassword(password);
-    return await this.db.insert(users).values({
+    return await this.db.insert(schema.users).values({
       email,
       password: hash,
       salt,
@@ -36,7 +36,7 @@ export class UsersService {
 
     const { salt, hash } = this.hashPassword(password);
     return await this.db
-      .update(users)
+      .update(schema.users)
       .set({ email, password: hash, salt } as typeof schema.users.$inferInsert); //work around to fix inference error due to default value for "salt" at user's table
   }
 
@@ -47,7 +47,19 @@ export class UsersService {
       throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
     }
 
-    return await this.db.delete(users).where(eq(users.id, Number(id)));
+    return await this.db
+      .delete(schema.users)
+      .where(eq(schema.users.id, Number(id)));
+  }
+
+  async storeRefreshToken({ token, sub }: RefreshTokenDto) {
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 3);
+    await this.db.insert(schema.refreshTokens).values({
+      sub,
+      expiryDate,
+      token,
+    } as unknown as typeof schema.refreshTokens.$inferInsert); //work around
   }
 
   hashPassword(password: string) {
@@ -59,10 +71,16 @@ export class UsersService {
   }
 
   async findUserByEmail(email: string) {
-    return await this.db.select().from(users).where(eq(users.email, email));
+    return await this.db
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.email, email));
   }
 
   async findUserById(id: number) {
-    return await this.db.select().from(users).where(eq(users.id, id));
+    return await this.db
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.id, id));
   }
 }
