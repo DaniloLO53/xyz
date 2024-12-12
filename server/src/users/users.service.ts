@@ -6,7 +6,6 @@ import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import * as schema from '../drizzle/schema/schema';
-import { RefreshTokenDto } from './dto/refreshToken.dto';
 
 @Injectable()
 export class UsersService {
@@ -50,16 +49,6 @@ export class UsersService {
     return await this.db
       .delete(schema.users)
       .where(eq(schema.users.id, Number(id)));
-  }
-
-  async storeRefreshToken({ token, sub }: RefreshTokenDto) {
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 3);
-    await this.db.insert(schema.refreshTokens).values({
-      sub,
-      expiryDate,
-      token,
-    } as unknown as typeof schema.refreshTokens.$inferInsert); //work around
   }
 
   hashPassword(password: string) {
