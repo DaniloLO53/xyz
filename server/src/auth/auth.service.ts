@@ -127,6 +127,12 @@ export class AuthService {
     } as unknown as typeof schema.refreshTokens.$inferInsert); //work around
   }
 
+  async deleteRefreshToken(userId: string) {
+    return await this.db
+      .delete(schema.refreshTokens)
+      .where(eq(schema.refreshTokens.userId, userId));
+  }
+
   validPassword(password: string, hash: string, salt: string) {
     const checkHash = crypto
       .pbkdf2Sync(password, salt, 10000, 64, 'sha512')

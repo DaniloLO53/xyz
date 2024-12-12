@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
 import { Request } from 'express';
@@ -21,9 +21,18 @@ export class AuthController {
     return req.user;
   }
 
+  @Delete('signout')
+  @UseGuards(JwtAuthGuard)
+  signout(@Req() req) {
+    console.log('SIGNOUT');
+    console.log('req.user', req.user);
+    return this.authService.deleteRefreshToken(req.user.userId);
+  }
+
   @Get('status')
   @UseGuards(JwtAuthGuard)
   status(@Req() req: Request) {
+    console.log('req.user', req.user);
     return req.user;
   }
 }
