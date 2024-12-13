@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -43,5 +44,11 @@ export class WalletController {
       walletId,
       ...updateWalletDto,
     });
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  deleteWalllet(@Req() req: AuthorizedRequest, @Param('id') walletId: string) {
+    return this.walletService.delete({ userId: req.user.userId, walletId });
   }
 }

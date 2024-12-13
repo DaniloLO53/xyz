@@ -5,6 +5,7 @@ import { CreateWalletDto } from './dto/createWallet.dto';
 import * as schema from '../drizzle/schema/schema';
 import { UpdateWalletDto } from './dto/updateWallet.dto';
 import { and, eq } from 'drizzle-orm';
+import { DeleteWalletDto } from './dto/deleteWallet.dto';
 
 @Injectable()
 export class WalletService {
@@ -25,6 +26,17 @@ export class WalletService {
     return await this.db
       .update(schema.wallets)
       .set({ name })
+      .where(
+        and(
+          eq(schema.wallets.userId, Number(userId)),
+          eq(schema.wallets.id, Number(walletId)),
+        ),
+      );
+  }
+
+  async delete({ userId, walletId }: DeleteWalletDto) {
+    return await this.db
+      .delete(schema.wallets)
       .where(
         and(
           eq(schema.wallets.userId, Number(userId)),
