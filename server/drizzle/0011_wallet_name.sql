@@ -1,0 +1,1 @@
+ALTER TABLE "wallets" ADD COLUMN "name" text DEFAULT 'portfolio' NOT NULL;

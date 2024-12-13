@@ -10,12 +10,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string, password: string) {
-    console.log('ON VALIDATE - local.strategy');
     const jwtToken = await this.authService.signIn({
       email,
       password,
     });
-    console.log({ jwtToken });
     return jwtToken;
   }
 }
