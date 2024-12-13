@@ -36,7 +36,8 @@ export class UsersService {
     const { salt, hash } = this.hashPassword(password);
     return await this.db
       .update(schema.users)
-      .set({ email, password: hash, salt } as typeof schema.users.$inferInsert); //work around to fix inference error due to default value for "salt" at user's table
+      .set({ email, password: hash, salt } as typeof schema.users.$inferInsert) //work around to fix inference error due to default value for "salt" at user's table
+      .where(eq(schema.users.email, email));
   }
 
   async deleteUser(id: string) {
