@@ -9,6 +9,10 @@ export default {
       gridTemplateColumns: {
         '70/30': '70% 28%',
       },
+      textColor: {
+        default: 'var(--color-text-default)',
+        strong: 'var(--color-text-strong)',
+      },
     },
     variants: {
       extend: {},

@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import TopBar from '@/components/TopBar.vue'
+import TopBarEconomics from '@/components/TopBarEconomics.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <TopBar />
-  <h1 class="text-2xl">X</h1>
+  <div class="text-default">
+    <TopBarEconomics />
+    <RouterView />
+  </div>
 </template>

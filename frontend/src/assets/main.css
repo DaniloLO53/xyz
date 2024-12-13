@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-text-default: #404040;
+  --color-text-strong: #000000;
+}
