@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { DRIZZLE } from 'src/drizzle/drizzle.module';
 import { DrizzleDB } from 'src/drizzle/types/drizzle';
 import { CreateWalletDto } from './dto/createWallet.dto';
@@ -23,6 +23,19 @@ export class WalletService {
     userId: string,
     { name, walletId }: UpdateWalletDto & { walletId: string },
   ) {
+    const [wallet] = await this.db
+      .select()
+      .from(schema.wallets)
+      .where(
+        and(
+          eq(schema.wallets.userId, Number(userId)),
+          eq(schema.wallets.id, Number(walletId)),
+        ),
+      );
+    if (!wallet) {
+      throw new HttpException('Wallet does not exist', HttpStatus.NOT_FOUND);
+    }
+
     return await this.db
       .update(schema.wallets)
       .set({ name })
@@ -35,6 +48,19 @@ export class WalletService {
   }
 
   async delete({ userId, walletId }: DeleteWalletDto) {
+    const [wallet] = await this.db
+      .select()
+      .from(schema.wallets)
+      .where(
+        and(
+          eq(schema.wallets.userId, Number(userId)),
+          eq(schema.wallets.id, Number(walletId)),
+        ),
+      );
+    if (!wallet) {
+      throw new HttpException('Wallet does not exist', HttpStatus.NOT_FOUND);
+    }
+
     return await this.db
       .delete(schema.wallets)
       .where(
