@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import ProfileIcon from '@/assets/icons/ProfileIcon.vue'
 import ButtonIcon from './ButtonIcon.vue'
@@ -5,14 +6,23 @@ import axios from 'axios'
 import { onMounted, reactive, ref } from 'vue'
 import ArrowDownIcon from '@/assets/icons/ArrowDownIcon.vue'
 import ArrowUpIcon from '@/assets/icons/ArrowUpIcon.vue'
+import Gauge from './Gauge.vue'
 
-const BASE_URL = import.meta.env.VITE_COINGECKO_BASE_URL
-const API_KEY = import.meta.env.VITE_COINGECKO_API_KEY
-const options = {
+const COINGECKO_BASE_URL = import.meta.env.VITE_COINGECKO_BASE_URL
+const COINGECKO_API_KEY = import.meta.env.VITE_COINGECKO_API_KEY
+const coingeckoOptions = {
   method: 'GET',
-  url: `${BASE_URL}simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true&precision=2`,
-  headers: { accept: 'application/json', 'x-cg-demo-api-key': API_KEY },
+  url: `${COINGECKO_BASE_URL}simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true&precision=2`,
+  headers: { accept: 'application/json', 'x-cg-demo-api-key': COINGECKO_API_KEY },
 }
+
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL
+const serverOptions = {
+  method: 'GET',
+  url: `${SERVER_BASE_URL}external/fear_and_greed`,
+  headers: { accept: 'application/json' },
+}
+
 const state = reactive({
   isLoading: true,
   coins: {
@@ -25,19 +35,22 @@ const state = reactive({
       usd_24h_change: 0,
     },
   },
+  greedAndFear: 0,
 })
 const userButtonIsFocused = ref(false)
 
 const fetchEconomicsData = async () => {
   try {
-    const { data } = await axios(options)
-    const { bitcoin, ethereum } = data
+    const { data: coinGeckoData } = await axios(coingeckoOptions)
+    const { data: greedAndFear } = (await axios(serverOptions)) as any
+
+    const { bitcoin, ethereum } = coinGeckoData
     state.coins.btc.usd = bitcoin.usd
     state.coins.btc.usd_24h_change = bitcoin.usd_24h_change
     state.coins.eth.usd = ethereum.usd
     state.coins.eth.usd_24h_change = ethereum.usd_24h_change
 
-    console.log(new Intl.NumberFormat('en-US').format(ethereum.usd))
+    state.greedAndFear = greedAndFear.value
   } catch (error) {
     console.error('Error fetching data from coingecko:', error)
   } finally {
@@ -54,7 +67,7 @@ onMounted(async () => {
   <div class="flex p-1 justify-center text-xs border border-b-slate">
     <div class="w-[70%] flex items-center justify-between">
       <ul class="flex space-x-8 items-center">
-        <li class="flex space-x-2">
+        <li class="flex items-center space-x-2">
           <span> BTC: </span>
           <span v-if="state.isLoading === false" class="text-strong"
             ><strong
@@ -74,7 +87,7 @@ onMounted(async () => {
             </span>
           </div>
         </li>
-        <li class="flex space-x-2">
+        <li class="flex space-x-2 items-center">
           <span> ETH: </span>
           <span v-if="state.isLoading === false" class="text-strong"
             ><strong
@@ -94,6 +107,9 @@ onMounted(async () => {
             </span>
           </div>
         </li>
+        <li class="flex space-x-2 items-center">
+          <Gauge :value="state.greedAndFear" />
+        </li>
       </ul>
       <div class="space-y-1">
         <ButtonIcon
@@ -107,7 +123,9 @@ onMounted(async () => {
           class="w-[150px] text-strong absolute divide-y divide-slate border rounded-md shadow-md"
           v-if="userButtonIsFocused === true"
         >
-          <li class="p-3 font-semibold hover:bg-gray-100">Sign Out</li>
+          <li class="p-3 font-semibold hover:bg-gray-100">
+            <ButtonIcon> Sign Out </ButtonIcon>
+          </li>
         </ul>
       </div>
     </div>
