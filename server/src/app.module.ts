@@ -4,6 +4,7 @@ import { WalletModule } from './wallets/wallets.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ExternalApiModule } from './externalApi/externalApi.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
     WalletModule,
     UsersModule,
     AuthModule,
+    ExternalApiModule,
     ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: [],
