@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import ProfileIcon from '@/assets/icons/ProfileIcon.vue'
-import ButtonSoft from './ButtonSoft.vue'
+import ButtonIcon from './ButtonIcon.vue'
 import axios from 'axios'
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import ArrowDownIcon from '@/assets/icons/ArrowDownIcon.vue'
 import ArrowUpIcon from '@/assets/icons/ArrowUpIcon.vue'
 
@@ -26,6 +26,7 @@ const state = reactive({
     },
   },
 })
+const userButtonIsFocused = ref(false)
 
 const fetchEconomicsData = async () => {
   try {
@@ -62,7 +63,7 @@ onMounted(async () => {
           >
           <div class="flex items-center">
             <ArrowDownIcon class="w-3 h-3 text-red-700" v-if="state.coins.btc.usd_24h_change < 0" />
-            <ArrowUpIcon v-else />
+            <ArrowUpIcon class="w-3 h-3 text-green-500" v-else />
             <span
               :class="{
                 'text-red-500': state.coins.btc.usd_24h_change < 0,
@@ -82,7 +83,7 @@ onMounted(async () => {
           >
           <div class="flex items-center">
             <ArrowDownIcon class="w-3 h-3 text-red-700" v-if="state.coins.eth.usd_24h_change < 0" />
-            <ArrowUpIcon v-else />
+            <ArrowUpIcon class="w-3 h-3 text-green-500" v-else />
             <span
               :class="{
                 'text-red-500': state.coins.eth.usd_24h_change < 0,
@@ -94,9 +95,17 @@ onMounted(async () => {
           </div>
         </li>
       </ul>
-      <ButtonSoft>
-        <ProfileIcon class="" />
-      </ButtonSoft>
+      <div class="space-y-1">
+        <ButtonIcon @focus="userButtonIsFocused = true" @blur="userButtonIsFocused = false">
+          <ProfileIcon />
+        </ButtonIcon>
+        <ul
+          class="w-[150px] text-strong absolute divide-y divide-slate border rounded-md shadow-md"
+          v-if="userButtonIsFocused === true"
+        >
+          <li class="p-3 font-semibold hover:bg-gray-100">Sign Out</li>
+        </ul>
+      </div>
     </div>
     <!-- <h1>Topbar</h1> -->
   </div>
