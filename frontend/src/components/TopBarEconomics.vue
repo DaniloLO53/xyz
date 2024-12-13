@@ -96,7 +96,11 @@ onMounted(async () => {
         </li>
       </ul>
       <div class="space-y-1">
-        <ButtonIcon @focus="userButtonIsFocused = true" @blur="userButtonIsFocused = false">
+        <ButtonIcon
+          @focus="userButtonIsFocused = true"
+          @blur="userButtonIsFocused = false"
+          variant="light"
+        >
           <ProfileIcon />
         </ButtonIcon>
         <ul
