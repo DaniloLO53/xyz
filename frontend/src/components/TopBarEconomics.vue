@@ -1,12 +1,16 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import ProfileIcon from '@/assets/icons/ProfileIcon.vue'
-import ButtonIcon from './ButtonIcon.vue'
+import Button from './Button.vue'
 import axios from 'axios'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import ArrowDownIcon from '@/assets/icons/ArrowDownIcon.vue'
 import ArrowUpIcon from '@/assets/icons/ArrowUpIcon.vue'
 import Gauge from './Gauge.vue'
+// import { userUserStore } from '@/stores/user'
+import SignInScreen from './SignInScreen.vue'
+import CloseIcon from '@/assets/icons/CloseIcon.vue'
+import { getCookie, removeCookie } from 'typescript-cookie'
 
 const COINGECKO_BASE_URL = import.meta.env.VITE_COINGECKO_BASE_URL
 const COINGECKO_API_KEY = import.meta.env.VITE_COINGECKO_API_KEY
@@ -38,6 +42,8 @@ const state = reactive({
   greedAndFear: 0,
 })
 const userButtonIsFocused = ref(false)
+const showSignInScreen = ref(false)
+const isUserSignedIn = ref(false)
 
 const fetchEconomicsData = async () => {
   try {
@@ -57,14 +63,42 @@ const fetchEconomicsData = async () => {
     state.isLoading = false
   }
 }
+// const userStore = userUserStore()
+
+const handleClickOutsideDropdown = (event: any) => {
+  const dropdown = document.querySelector('.dropdown')!
+  if (!dropdown.contains(event.target)) {
+    userButtonIsFocused.value = false
+  }
+}
+
+const checkIsSignedIn = () => {
+  const accessToken = getCookie('accessToken')
+  if (accessToken) {
+    isUserSignedIn.value = true
+  }
+}
+
+const signOut = () => {
+  removeCookie('accessToken')
+  window.location.href = '/'
+}
 
 onMounted(async () => {
   await fetchEconomicsData()
+  checkIsSignedIn()
+  document.addEventListener('click', handleClickOutsideDropdown)
+})
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutsideDropdown)
 })
 </script>
 
 <template>
-  <div class="flex p-1 justify-center text-xs border border-b-slate">
+  <div class="flex justify-center text-xs border border-b-slate relative h-[55px]">
+    <RouterLink :to="'/'" class="px-3 py-1 h-full absolute left-0">
+      <img src="@/assets/images/logo_horizontal.png" class="h-full" />
+    </RouterLink>
     <div class="w-[70%] flex items-center justify-between">
       <ul class="flex space-x-8 items-center">
         <li class="flex items-center space-x-2">
@@ -111,24 +145,28 @@ onMounted(async () => {
           <Gauge :value="state.greedAndFear" />
         </li>
       </ul>
-      <div class="space-y-1">
-        <ButtonIcon
-          @focus="userButtonIsFocused = true"
-          @blur="userButtonIsFocused = false"
-          variant="light"
-        >
+      <div class="space-y-1 dropdown">
+        <Button @focus="userButtonIsFocused = true" variant="light">
           <ProfileIcon />
-        </ButtonIcon>
+        </Button>
         <ul
           class="w-[150px] text-strong absolute divide-y divide-slate border rounded-md shadow-md"
           v-if="userButtonIsFocused === true"
         >
           <li class="p-3 font-semibold hover:bg-gray-100">
-            <ButtonIcon> Sign Out </ButtonIcon>
+            <Button @click="isUserSignedIn ? signOut() : (showSignInScreen = true)">
+              {{ isUserSignedIn ? 'Sign Out' : 'Sign In' }}
+            </Button>
           </li>
         </ul>
       </div>
     </div>
-    <!-- <h1>Topbar</h1> -->
   </div>
+  <SignInScreen v-if="showSignInScreen">
+    <div class="flex justify-end">
+      <Button class="rounded-[50%] bg-slate-100 p-1" @click="showSignInScreen = false">
+        <CloseIcon />
+      </Button>
+    </div>
+  </SignInScreen>
 </template>
