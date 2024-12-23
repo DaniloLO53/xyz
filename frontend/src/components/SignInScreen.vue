@@ -49,7 +49,7 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="fixed top-0 w-screen h-screen bg-black/60 flex items-center justify-center">
+  <div class="fixed z-10 top-0 w-screen h-screen bg-black/60 flex items-center justify-center">
     <div class="p-5 bg-white rounded-md">
       <slot></slot>
       <div class="py-3">
