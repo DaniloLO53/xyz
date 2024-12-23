@@ -7,7 +7,6 @@ import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import ArrowDownIcon from '@/assets/icons/ArrowDownIcon.vue'
 import ArrowUpIcon from '@/assets/icons/ArrowUpIcon.vue'
 import Gauge from './Gauge.vue'
-// import { userUserStore } from '@/stores/user'
 import SignInScreen from './SignInScreen.vue'
 import CloseIcon from '@/assets/icons/CloseIcon.vue'
 import { getCookie, removeCookie } from 'typescript-cookie'
@@ -63,7 +62,6 @@ const fetchEconomicsData = async () => {
     state.isLoading = false
   }
 }
-// const userStore = userUserStore()
 
 const handleClickOutsideDropdown = (event: any) => {
   const dropdown = document.querySelector('.dropdown')!
@@ -125,7 +123,12 @@ onUnmounted(() => {
           <span> ETH: </span>
           <span v-if="state.isLoading === false" class="text-strong"
             ><strong
-              >${{ new Intl.NumberFormat('en-US').format(state.coins.eth.usd) }}</strong
+              >${{
+                new Intl.NumberFormat('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 3,
+                }).format(state.coins.eth.usd)
+              }}</strong
             ></span
           >
           <div class="flex items-center">
