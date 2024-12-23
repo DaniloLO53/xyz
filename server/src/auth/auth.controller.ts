@@ -12,6 +12,7 @@ export class AuthController {
   @Post('signin')
   @UseGuards(LocalGuard)
   signIn(@Req() req: AuthorizedRequest) {
+    console.log('SIGN IN');
     return req.user;
   }
 

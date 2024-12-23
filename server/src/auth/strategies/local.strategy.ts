@@ -14,6 +14,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       email,
       password,
     });
+    console.log({ jwtToken });
     return jwtToken;
   }
 }

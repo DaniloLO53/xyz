@@ -11,8 +11,11 @@ import { DeleteWalletDto } from './dto/deleteWallet.dto';
 export class WalletService {
   constructor(@Inject(DRIZZLE) private db: DrizzleDB) {}
 
-  async findAll() {
-    return await this.db.select().from(schema.wallets);
+  async find(userId: string) {
+    return await this.db
+      .select()
+      .from(schema.wallets)
+      .where(eq(schema.wallets.userId, Number(userId)));
   }
 
   async create(userId: string, { name }: CreateWalletDto) {

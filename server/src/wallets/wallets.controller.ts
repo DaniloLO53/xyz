@@ -20,8 +20,9 @@ export class WalletController {
   constructor(private walletService: WalletService) {}
 
   @Get()
-  async findAll() {
-    return this.walletService.findAll();
+  @UseGuards(JwtAuthGuard)
+  findWalllet(@Req() req: AuthorizedRequest) {
+    return this.walletService.find(req.user.userId);
   }
 
   @Post()
